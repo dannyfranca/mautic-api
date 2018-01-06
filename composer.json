@@ -1,0 +1,21 @@
+{
+    "name": "dannyfranca/mautic-api",
+    "description": "PHP Class to simplify conection with Mautic API.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Danny Franca",
+            "email": "contato@dannyfranca.com.br"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "mautic/api-library": "2.10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Model\\": "Source/Models/"
+        }
+    }
+}
