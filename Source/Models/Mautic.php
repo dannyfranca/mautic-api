@@ -170,6 +170,19 @@ class Mautic {
         return $this->returnResponse($response, 'edit');
     }
 
+    public function sync(string $searchFilter = null, array $data, array $customOptions = []) {
+        $contacts = $this->getList($searchFilter, $customOptions);
+        if ($contacts):
+            foreach ($contacts as $c):
+                $response = $this->contexts[$this->activeContext]->edit($c['id'], $data, true);
+                break;
+            endforeach;
+        else:
+            $response = $this->contexts[$this->activeContext]->create($data);
+        endif;
+        return $this->returnResponse($response, 'sync');
+    }
+
     /**
      * Delete a single element with a given ID from seted context.
      * 
