@@ -112,6 +112,20 @@ class Mautic {
         endif;
     }
 
+    public function getFirst(string $searchFilter = null, array $customOptions = []) {
+        $options = array_merge(['limit' => 1], $customOptions);
+        $contacts = $this->getList($searchFilter, $options);
+        if ($contacts):
+            foreach ($contacts as $c):
+                $response = $c;
+                break;
+            endforeach;
+        else:
+            $response = null;
+        endif;
+        return $response;
+    }
+
     /**
      * Return list of contacts in a campaign with a given id.
      * 
@@ -171,7 +185,8 @@ class Mautic {
     }
 
     public function sync(string $searchFilter = null, array $data, array $customOptions = []) {
-        $contacts = $this->getList($searchFilter, $customOptions);
+        $options = array_merge(['limit' => 1], $customOptions);
+        $contacts = $this->getList($searchFilter, $options);
         if ($contacts):
             foreach ($contacts as $c):
                 $response = $this->contexts[$this->activeContext]->edit($c['id'], $data, true);
@@ -230,7 +245,7 @@ class Mautic {
      * @return bool Returns True if remove succeeds.
      */
     public function removeContact(int $contextId, int $contactId) {
-        $response = $this->contexts[$this->activeContext]->removeContact($contactId, $contextId);
+        $response = $this->contexts[$this->activeContext]->removeContact($contextId, $contactId);
         if (isset($response['success'])) :
             return true;
         else :
@@ -300,11 +315,18 @@ class Mautic {
     }
 
     private function handleError($response, $context, $functionOrigin) {
-        $emailSubject = "Error: Mautic API - {$this->settings['baseUrl']}";
-        $emailContent = "<p>Context: {$context}</p>"
+        $subject = "Error: Mautic API - {$this->settings['baseUrl']}";
+        $content = ""
+                . "<p>Context: {$context}</p>"
                 . "<p>Function: {$functionOrigin}</p>"
-                . "<p>Response: " . print_r($response['errors'], true) . "</p>";
-        var_dump($emailSubject, $emailContent);
+                . "<p>ERRORS</p>:<br>";
+        foreach ($response['errors'] as $k => $v) :
+            $content .= "Index {$k}:"
+                    . "code: {$v['code']}"
+                    . "message: {$v['message']}"
+                    . "<hr><br>";
+        endforeach;
+//        var_dump($subject, $content);
         return null;
     }
 
